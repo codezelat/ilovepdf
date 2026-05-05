@@ -1,0 +1,66 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>ILovePDF Studio</title>
+  <defs>
+    <linearGradient id="blue-ring" x1="79" y1="132" x2="329" y2="396" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0EA5E9"/>
+      <stop offset="0.46" stop-color="#075EA8"/>
+      <stop offset="1" stop-color="#063B75"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="185" y1="125" x2="408" y2="376" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#D7DCE4"/>
+    </linearGradient>
+    <linearGradient id="red-core" x1="251" y1="210" x2="334" y2="313" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF1744"/>
+      <stop offset="1" stop-color="#DC2626"/>
+    </linearGradient>
+    <linearGradient id="blue-tile" x1="366" y1="133" x2="430" y2="199" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1298E8"/>
+      <stop offset="1" stop-color="#075EA8"/>
+    </linearGradient>
+    <filter id="soft-shadow" x="36" y="94" width="430" height="337" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#020617" flood-opacity="0.32"/>
+    </filter>
+    <filter id="tile-shadow" x="349" y="126" width="111" height="113" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#020617" flood-opacity="0.24"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="#020617"/>
+  <g filter="url(#soft-shadow)">
+    <path
+      d="M215 368c-72 0-131-58-131-130S143 108 215 108c50 0 94 28 116 69"
+      stroke="url(#blue-ring)"
+      stroke-width="46"
+      stroke-linecap="round"
+    />
+
+    <path
+      d="M302 121c38 0 73 12 101 33l-28 68 54 45c-7 39-28 73-59 96l-74-8-35 57c-37-9-69-30-91-59l18-72-53-39c4-38 22-73 50-97l71 4 46-28Z"
+      fill="none"
+      stroke="url(#paper)"
+      stroke-width="30"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+    />
+
+    <path
+      d="M208 181h88l49 53v98H208V181Z"
+      fill="#F8FAFC"
+      stroke="#E5E7EB"
+      stroke-width="12"
+      stroke-linejoin="round"
+    />
+    <path d="M296 181v55h49" fill="#E5E7EB"/>
+    <path d="M235 276h76M235 312h61" stroke="#CBD5E1" stroke-width="14" stroke-linecap="round"/>
+
+    <circle cx="285" cy="273" r="53" fill="url(#red-core)"/>
+    <path d="M259 281c10 10 42 10 52 0" stroke="#FFB4B4" stroke-width="10" stroke-linecap="round" opacity="0.55"/>
+  </g>
+
+  <g filter="url(#tile-shadow)">
+    <rect x="366" y="132" width="46" height="46" rx="7" fill="url(#blue-tile)"/>
+    <rect x="366" y="187" width="46" height="46" rx="7" fill="#E5E7EB"/>
+    <rect x="421" y="164" width="46" height="46" rx="7" fill="url(#blue-tile)"/>
+  </g>
+</svg>

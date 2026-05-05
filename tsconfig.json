@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "useDefineForClassFields": true,
+        "module": "ESNext",
+        "lib": ["ES2022", "DOM", "DOM.Iterable", "WebWorker"],
+        "skipLibCheck": true,
+        "moduleResolution": "Bundler",
+        "allowJs": false,
+        "allowImportingTsExtensions": true,
+        "isolatedModules": true,
+        "moduleDetection": "force",
+        "ignoreDeprecations": "6.0",
+        "noEmit": true,
+        "jsx": "preserve",
+        "strict": true,
+        "noFallthroughCasesInSwitch": true,
+        "types": ["vite/client"],
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["resources/js/*"]
+        }
+    },
+    "include": ["resources/js/**/*.ts", "resources/js/**/*.vue"]
+}

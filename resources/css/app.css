@@ -1,0 +1,72 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../**/*.ts';
+@source '../**/*.vue';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-primary-50: #fef2f2;
+    --color-primary-100: #fee2e2;
+    --color-primary-200: #fecaca;
+    --color-primary-300: #fca5a5;
+    --color-primary-400: #f87171;
+    --color-primary-500: #ef4444;
+    --color-primary-600: #dc2626;
+    --color-primary-700: #b91c1c;
+    --color-primary-800: #991b1b;
+    --color-primary-900: #7f1d1d;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        min-height: 100vh;
+        background: #020617;
+        color: #ffffff;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+        font: inherit;
+    }
+}
+
+@layer components {
+    .brand-button {
+        @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary-500 via-red-500 to-orange-400 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-900/30 transition duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-primary-500/25 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .quiet-button {
+        @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-5 py-3 text-sm font-semibold text-white/80 transition hover:bg-white/20 hover:text-white focus:outline-none focus:ring-4 focus:ring-white/10;
+    }
+
+    .panel {
+        @apply rounded-[32px] border border-white/10 bg-white/5 text-white shadow-xl shadow-black/20 backdrop-blur;
+    }
+
+    .tool-card {
+        @apply rounded-3xl border border-white/10 bg-white/5 p-5 text-white transition hover:-translate-y-0.5 hover:border-primary-400/60 hover:bg-white/10;
+    }
+
+    .field {
+        @apply w-full rounded-3xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white outline-none transition placeholder:text-white/50 focus:border-primary-400/60 focus:ring-4 focus:ring-primary-500/20;
+    }
+
+    .nav-link {
+        @apply rounded-2xl px-4 py-2 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white;
+    }
+
+    .glass-chip {
+        @apply rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs uppercase tracking-widest text-white/70;
+    }
+}
