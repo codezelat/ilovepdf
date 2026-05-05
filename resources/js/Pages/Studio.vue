@@ -53,6 +53,7 @@ const options = reactive<ProcessingOptions>({
     pageRange: '',
     rotation: 90,
     order: '',
+    compressionMode: 'smart',
     watermarkText: 'CONFIDENTIAL',
     watermarkOpacity: 0.18,
     pageNumberPrefix: 'Page',
@@ -610,6 +611,19 @@ function categoryIcon(category: string) {
                                     <option :value="180">180 degrees</option>
                                     <option :value="270">270 degrees</option>
                                 </select>
+                            </div>
+                            <div v-if="selectedTool.options.includes('compression')" class="space-y-3">
+                                <label class="text-sm font-semibold text-white/80">Compression level</label>
+                                <select v-model="options.compressionMode" class="field">
+                                    <option value="smart">Smart - best safe result</option>
+                                    <option value="lossless">Lossless - keep exact visuals</option>
+                                    <option value="balanced">Balanced - qpdf image cleanup</option>
+                                    <option value="strong">Strong - flatten only when smaller</option>
+                                    <option value="maximum">Maximum - smallest accepted output</option>
+                                </select>
+                                <p class="text-xs leading-5 text-white/50">
+                                    The browser-served qpdf engine runs first. Aggressive modes only flatten pages when the result is actually smaller.
+                                </p>
                             </div>
                             <div v-if="selectedTool.options.includes('watermark')" class="space-y-3">
                                 <label class="text-sm font-semibold text-white/80">Watermark text</label>

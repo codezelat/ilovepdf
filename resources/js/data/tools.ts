@@ -6,6 +6,7 @@ import {
     FilePenLine,
     FileText,
     Hash,
+    Minimize2,
     RotateCw,
     Scissors,
     Trash2,
@@ -17,6 +18,7 @@ export type ToolCategory = 'Organize' | 'Convert' | 'Edit';
 
 export type ToolId =
     | 'merge'
+    | 'compress'
     | 'split'
     | 'extract'
     | 'delete-pages'
@@ -40,7 +42,7 @@ export type ToolDefinition = {
     accepts: string;
     multiple: boolean;
     popular?: boolean;
-    options: Array<'pageRange' | 'rotation' | 'order' | 'watermark' | 'pageNumbers' | 'imageOutput' | 'metadata'>;
+    options: Array<'pageRange' | 'rotation' | 'order' | 'watermark' | 'pageNumbers' | 'imageOutput' | 'metadata' | 'compression'>;
 };
 
 export const tools: ToolDefinition[] = [
@@ -56,6 +58,19 @@ export const tools: ToolDefinition[] = [
         multiple: true,
         popular: true,
         options: [],
+    },
+    {
+        id: 'compress',
+        name: 'Compress PDF',
+        route: '/compress-pdf',
+        category: 'Edit',
+        icon: Minimize2,
+        short: 'Reduce PDF file size.',
+        description: 'Use a browser-served qpdf engine first, then optional image flattening only when it makes a smaller PDF.',
+        accepts: '.pdf,application/pdf',
+        multiple: false,
+        popular: true,
+        options: ['compression'],
     },
     {
         id: 'split',

@@ -91,6 +91,17 @@ class StudioRoutingTest extends TestCase
             ->assertSee(e(config('studio.pages.home.title')), false);
     }
 
+    public function test_browser_pdf_compression_engine_is_shipped(): void
+    {
+        $engine = public_path('vendor/qpdf/qpdf.mjs');
+        $license = public_path('vendor/qpdf/LICENSE');
+
+        $this->assertFileExists($engine);
+        $this->assertFileExists($license);
+        $this->assertStringContainsString('function', file_get_contents($engine, false, null, 0, 512));
+        $this->assertStringContainsString('Apache License', file_get_contents($license, false, null, 0, 512));
+    }
+
     #[DataProvider('removedRoutes')]
     public function test_out_of_scope_routes_are_not_exposed(string $route): void
     {
@@ -104,6 +115,7 @@ class StudioRoutingTest extends TestCase
     {
         return [
             'merge' => ['/merge-pdf'],
+            'compress' => ['/compress-pdf'],
             'split' => ['/split-pdf'],
             'extract' => ['/extract-pdf-pages'],
             'delete pages' => ['/delete-pdf-pages'],
@@ -146,7 +158,6 @@ class StudioRoutingTest extends TestCase
     public static function removedRoutes(): array
     {
         return [
-            'compress' => ['/compress-pdf'],
             'office converters' => ['/office-pdf-converters'],
             'ocr' => ['/ocr-pdf'],
             'protect unlock' => ['/protect-unlock-pdf'],

@@ -10,6 +10,7 @@ export type ProcessingOptions = {
     pageRange: string;
     rotation: number;
     order: string;
+    compressionMode: 'smart' | 'lossless' | 'balanced' | 'strong' | 'maximum';
     watermarkText: string;
     watermarkOpacity: number;
     pageNumberPrefix: string;
@@ -27,6 +28,26 @@ export type ProcessResult = {
 
 const pdfMime = 'application/pdf';
 const maxFileSize = 200 * 1024 * 1024;
+const minUsefulCompressionRatio = 0.995;
+
+type QpdfModule = {
+    FS: {
+        writeFile(path: string, data: Uint8Array): void;
+        readFile(path: string, options?: { encoding?: 'binary' }): Uint8Array;
+        unlink(path: string): void;
+    };
+    callMain(args: string[]): void;
+};
+
+type QpdfFactory = (options?: { print?: (message: string) => void; printErr?: (message: string) => void }) => Promise<QpdfModule>;
+
+type CompressionCandidate = {
+    bytes: Uint8Array;
+    method: string;
+    preservesText: boolean;
+};
+
+let qpdfModulePromise: Promise<QpdfModule> | null = null;
 
 export async function validateFiles(files: File[], acceptsImages = false): Promise<string[]> {
     const errors: string[] = [];
@@ -71,6 +92,8 @@ export async function processPdfTool(tool: ToolId, files: File[], options: Proce
     switch (tool) {
         case 'merge':
             return [await mergePdfs(files)];
+        case 'compress':
+            return [await compressPdf(files[0], options.compressionMode)];
         case 'split':
             return [await splitPdf(files[0])];
         case 'extract':
@@ -168,6 +191,222 @@ async function mergePdfs(files: File[]): Promise<ProcessResult> {
     }
 
     return pdfResult('merged.pdf', await output.save(), `Merged ${files.length} PDFs into ${count} pages.`);
+}
+
+async function compressPdf(file: File, mode: ProcessingOptions['compressionMode']): Promise<ProcessResult> {
+    const sourceBytes = new Uint8Array(await file.arrayBuffer());
+    const candidates: CompressionCandidate[] = [];
+    const originalCandidate: CompressionCandidate = {
+        bytes: sourceBytes,
+        method: 'The original file was already smaller than the safe compressed outputs.',
+        preservesText: true,
+    };
+
+    candidates.push(await structuralCompressionCandidate(file, sourceBytes, mode === 'balanced' || mode === 'smart'));
+
+    if (mode === 'lossless') {
+        return compressedResult(file, sourceBytes, chooseBestCandidate(sourceBytes, candidates, originalCandidate));
+    }
+
+    if (mode === 'balanced') {
+        return compressedResult(file, sourceBytes, chooseBestCandidate(sourceBytes, candidates, originalCandidate));
+    }
+
+    if (mode === 'smart') {
+        const firstPass = chooseBestCandidate(sourceBytes, candidates, originalCandidate);
+        if (firstPass.bytes.length <= sourceBytes.length * 0.9) {
+            return compressedResult(file, sourceBytes, firstPass);
+        }
+        candidates.push(await rasterCompressionCandidate(sourceBytes, 'strong'));
+        return compressedResult(file, sourceBytes, chooseBestCandidate(sourceBytes, candidates, originalCandidate));
+    }
+
+    candidates.push(await rasterCompressionCandidate(sourceBytes, mode));
+
+    return compressedResult(file, sourceBytes, chooseBestCandidate(sourceBytes, candidates, originalCandidate));
+}
+
+async function structuralCompressionCandidate(file: File, sourceBytes: Uint8Array, includeImageOptimization: boolean): Promise<CompressionCandidate> {
+    try {
+        return await qpdfCompressionCandidate(sourceBytes, includeImageOptimization);
+    } catch {
+        const doc = await loadPdf(file);
+        return {
+            bytes: await doc.save({ useObjectStreams: true }),
+            method: 'Optimized PDF object streams with the built-in browser fallback.',
+            preservesText: true,
+        };
+    }
+}
+
+async function qpdfCompressionCandidate(sourceBytes: Uint8Array, includeImageOptimization: boolean): Promise<CompressionCandidate> {
+    const args = [
+        '--compress-streams=y',
+        '--decode-level=generalized',
+        '--recompress-flate',
+        '--compression-level=9',
+        '--object-streams=generate',
+    ];
+
+    if (includeImageOptimization) {
+        args.push('--optimize-images');
+    }
+
+    const bytes = await runQpdf(sourceBytes, args);
+
+    return {
+        bytes,
+        method: includeImageOptimization
+            ? 'Optimized with the browser-served qpdf engine, including safe image recompression when it reduced size.'
+            : 'Optimized with the browser-served qpdf engine without changing page visuals.',
+        preservesText: true,
+    };
+}
+
+async function runQpdf(sourceBytes: Uint8Array, args: string[]): Promise<Uint8Array> {
+    const qpdf = await loadQpdf();
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const input = `/input-${id}.pdf`;
+    const output = `/output-${id}.pdf`;
+
+    qpdf.FS.writeFile(input, sourceBytes);
+
+    try {
+        qpdf.callMain([...args, input, output]);
+        const result = qpdf.FS.readFile(output, { encoding: 'binary' });
+        return new Uint8Array(result);
+    } finally {
+        try {
+            qpdf.FS.unlink(input);
+        } catch {
+            // The in-memory filesystem may already have removed the file after a failed run.
+        }
+        try {
+            qpdf.FS.unlink(output);
+        } catch {
+            // No output is expected when qpdf rejects an encrypted or malformed PDF.
+        }
+    }
+}
+
+async function loadQpdf(): Promise<QpdfModule> {
+    const qpdfUrl = '/vendor/qpdf/qpdf.mjs';
+    qpdfModulePromise ??= import(/* @vite-ignore */ qpdfUrl).then((module) =>
+        (module.default as QpdfFactory)({
+            print: () => undefined,
+            printErr: () => undefined,
+        }),
+    );
+
+    return qpdfModulePromise;
+}
+
+async function rasterCompressionCandidate(sourceBytes: Uint8Array, mode: Exclude<ProcessingOptions['compressionMode'], 'smart' | 'lossless' | 'balanced'>): Promise<CompressionCandidate> {
+    const profile = compressionProfile(mode);
+    const pdf = await pdfjs.getDocument({ data: sourceBytes }).promise;
+    const output = await PDFDocument.create();
+    const pageCount = pdf.numPages;
+
+    for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
+        const page = await pdf.getPage(pageNumber);
+        const baseViewport = page.getViewport({ scale: 1 });
+        const scale = safeCanvasScale(baseViewport.width, baseViewport.height, profile.scale);
+        const viewport = page.getViewport({ scale });
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        if (!context) throw new Error('Canvas rendering is not available in this browser.');
+
+        canvas.width = Math.max(1, Math.floor(viewport.width));
+        canvas.height = Math.max(1, Math.floor(viewport.height));
+        context.fillStyle = '#ffffff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        await page.render({ canvas, canvasContext: context, viewport }).promise;
+
+        const image = await canvasToBytes(canvas, 'image/jpeg', profile.quality);
+        const embedded = await output.embedJpg(image);
+        const outputPage = output.addPage([baseViewport.width, baseViewport.height]);
+        outputPage.drawImage(embedded, {
+            x: 0,
+            y: 0,
+            width: baseViewport.width,
+            height: baseViewport.height,
+        });
+
+        page.cleanup();
+        canvas.width = 0;
+        canvas.height = 0;
+    }
+
+    pdf.destroy();
+
+    return {
+        bytes: await output.save({ useObjectStreams: true }),
+        method: `Rendered ${pageCount} pages with ${profile.label}. Pages were flattened because this mode prioritizes size.`,
+        preservesText: false,
+    };
+}
+
+function chooseBestCandidate(sourceBytes: Uint8Array, candidates: CompressionCandidate[], originalCandidate: CompressionCandidate): CompressionCandidate {
+    const best = [...candidates].sort((a, b) => a.bytes.length - b.bytes.length)[0] ?? originalCandidate;
+
+    if (best.bytes.length < sourceBytes.length * minUsefulCompressionRatio) {
+        return best;
+    }
+
+    return originalCandidate;
+}
+
+function compressedResult(file: File, sourceBytes: Uint8Array, candidate: CompressionCandidate): ProcessResult {
+    const suffix = candidate.bytes === sourceBytes ? 'original-size' : 'compressed';
+    const textState = candidate.preservesText ? 'Text, vectors, links, and selectable content are preserved.' : 'Text selection and vectors may be flattened.';
+
+    return pdfResult(
+        outputName(file, suffix),
+        candidate.bytes,
+        compressionSummary(sourceBytes.length, candidate.bytes.length, `${candidate.method} ${textState}`),
+    );
+}
+
+function compressionProfile(mode: Exclude<ProcessingOptions['compressionMode'], 'smart' | 'lossless' | 'balanced'>) {
+    const profiles = {
+        strong: { label: 'strong JPEG compression', quality: 0.68, scale: 1.35 },
+        maximum: { label: 'maximum JPEG compression', quality: 0.5, scale: 1 },
+    } satisfies Record<Exclude<ProcessingOptions['compressionMode'], 'smart' | 'lossless' | 'balanced'>, { label: string; quality: number; scale: number }>;
+
+    return profiles[mode];
+}
+
+function safeCanvasScale(width: number, height: number, requestedScale: number) {
+    const maxPixels = 16_000_000;
+    const requestedPixels = width * height * requestedScale * requestedScale;
+    if (requestedPixels <= maxPixels) return requestedScale;
+
+    return Math.max(0.5, Math.sqrt(maxPixels / (width * height)));
+}
+
+async function canvasToBytes(canvas: HTMLCanvasElement, mime: string, quality: number): Promise<Uint8Array> {
+    const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((value) => (value ? resolve(value) : reject(new Error('Failed to compress page image.'))), mime, quality);
+    });
+
+    return new Uint8Array(await blob.arrayBuffer());
+}
+
+function compressionSummary(originalSize: number, outputSize: number, prefix: string) {
+    const difference = originalSize - outputSize;
+    if (difference > 0) {
+        const percent = Math.round((difference / originalSize) * 100);
+        return `${prefix} Reduced from ${formatBytes(originalSize)} to ${formatBytes(outputSize)} (${percent}% smaller).`;
+    }
+
+    return `${prefix} Output is ${formatBytes(outputSize)}; this PDF was already compact for the selected mode.`;
+}
+
+function formatBytes(bytes: number) {
+    if (bytes === 0) return '0 B';
+    const units = ['B', 'KB', 'MB', 'GB'];
+    const unit = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+    return `${(bytes / 1024 ** unit).toFixed(unit === 0 ? 0 : 1)} ${units[unit]}`;
 }
 
 async function splitPdf(file: File): Promise<ProcessResult> {

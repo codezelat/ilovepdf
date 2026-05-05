@@ -39,6 +39,12 @@ return [
             'title' => 'Merge PDF Online Privately - ILovePDF Studio',
             'description' => 'Combine two or more PDF files into one document directly in your browser with no document upload for this tool.',
         ],
+        'compress' => [
+            'path' => '/compress-pdf',
+            'name' => 'Compress PDF',
+            'title' => 'Compress PDF Online Privately - ILovePDF Studio',
+            'description' => 'Reduce PDF file size privately in your browser with qpdf-powered optimization, lossless cleanup, and safe stronger compression modes.',
+        ],
         'split' => [
             'path' => '/split-pdf',
             'name' => 'Split PDF',
