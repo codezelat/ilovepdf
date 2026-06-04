@@ -47,19 +47,6 @@ export type ToolDefinition = {
 
 export const tools: ToolDefinition[] = [
     {
-        id: 'merge',
-        name: 'Merge PDF',
-        route: '/merge-pdf',
-        category: 'Organize',
-        icon: Combine,
-        short: 'Combine PDFs in order.',
-        description: 'Upload two or more PDF files and combine their pages into one clean document.',
-        accepts: '.pdf,application/pdf',
-        multiple: true,
-        popular: true,
-        options: [],
-    },
-    {
         id: 'compress',
         name: 'Compress PDF',
         route: '/compress-pdf',
@@ -71,6 +58,19 @@ export const tools: ToolDefinition[] = [
         multiple: false,
         popular: true,
         options: ['compression'],
+    },
+    {
+        id: 'merge',
+        name: 'Merge PDF',
+        route: '/merge-pdf',
+        category: 'Organize',
+        icon: Combine,
+        short: 'Combine PDFs in order.',
+        description: 'Upload two or more PDF files and combine their pages into one clean document.',
+        accepts: '.pdf,application/pdf',
+        multiple: true,
+        popular: true,
+        options: [],
     },
     {
         id: 'split',

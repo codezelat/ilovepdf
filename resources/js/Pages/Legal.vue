@@ -176,25 +176,20 @@ const seoJsonLd = computed(() => (props.seo?.jsonLd ?? []).map((schema) => JSON.
         <script v-for="(schema, index) in seoJsonLd" :key="index" type="application/ld+json">{{ schema }}</script>
     </Head>
 
-    <div class="min-h-screen bg-slate-950 text-white">
-        <div class="pointer-events-none absolute inset-0 overflow-hidden">
-            <div class="absolute -right-10 -top-32 h-96 w-96 rounded-full bg-primary-500/25 blur-[180px]"></div>
-            <div class="absolute -left-24 top-1/3 h-[28rem] w-[28rem] rounded-full bg-blue-500/15 blur-[200px]"></div>
-        </div>
-
-        <header class="sticky top-0 z-40 border-b border-white/10 bg-slate-950/75 backdrop-blur-md">
-            <nav class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen bg-paper-50 text-ink-900">
+        <header class="sticky top-0 z-40 border-b border-paper-300 bg-white/80 backdrop-blur-sm">
+            <nav class="page-container flex h-16 items-center justify-between">
                 <Link class="flex items-center gap-3 text-left" href="/merge-pdf">
-                    <img :src="'/icons/icon.svg'" alt="ILovePDF Studio logo" class="h-11 w-11 rounded-2xl object-cover shadow-lg shadow-primary-900/30" />
+                    <img :src="'/icons/icon.svg'" alt="ILovePDF Studio logo" class="h-9 w-9 rounded-lg object-cover" />
                     <span>
-                        <span class="block text-lg font-bold tracking-wide">ILovePDF Studio</span>
-                        <span class="block text-xs text-white/60">Private · Instant · Document-perfect</span>
+                        <span class="block text-base font-semibold tracking-tight text-ink-900">ILovePDF Studio</span>
+                        <span class="block text-xs text-ink-500">Private &middot; Instant &middot; Document-perfect</span>
                     </span>
                 </Link>
 
                 <div class="flex items-center gap-3">
                     <InstallAppButton />
-                    <Link class="quiet-button px-4 py-2" href="/merge-pdf">
+                    <Link class="quiet-button px-4" href="/merge-pdf">
                         <ArrowLeft class="h-4 w-4" />
                         Back to Studio
                     </Link>
@@ -202,25 +197,25 @@ const seoJsonLd = computed(() => (props.seo?.jsonLd ?? []).map((schema) => JSON.
             </nav>
         </header>
 
-        <main class="relative z-10 mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
-            <section class="rounded-[40px] border border-white/10 bg-gradient-to-br from-white/5 via-transparent to-white/10 p-8 sm:p-12">
+        <main class="page-container py-12">
+            <section class="rounded-xl border border-paper-400 bg-white p-8 sm:p-12">
                 <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
-                    <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-[24px] bg-white/10 text-primary-200 shadow-inner shadow-white/10">
-                        <component :is="currentPage.icon" class="h-8 w-8" />
+                    <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-stamp-50 text-stamp-400">
+                        <component :is="currentPage.icon" class="h-7 w-7" aria-hidden="true" />
                     </div>
                     <div class="space-y-4">
-                        <p class="text-sm uppercase tracking-[0.4em] text-white/60">ILovePDF Studio</p>
-                        <h1 class="text-4xl font-semibold leading-tight sm:text-5xl">{{ currentPage.title }}</h1>
-                        <p class="max-w-3xl text-lg text-white/70">{{ currentPage.subtitle }}</p>
-                        <p class="text-sm text-white/50">Effective date: {{ effectiveDate }}</p>
+                        <p class="text-sm font-semibold uppercase tracking-[0.4em] text-stamp-500">ILovePDF Studio</p>
+                        <h1 class="text-4xl font-bold leading-tight tracking-tight sm:text-5xl sm:leading-tight">{{ currentPage.title }}</h1>
+                        <p class="max-w-3xl text-lg leading-relaxed text-ink-500">{{ currentPage.subtitle }}</p>
+                        <p class="text-sm text-ink-500">Effective date: {{ effectiveDate }}</p>
                     </div>
                 </div>
             </section>
 
             <section class="mt-8 space-y-4">
-                <article v-for="section in currentPage.sections" :key="section.title" class="rounded-[32px] border border-white/10 bg-white/5 p-6 sm:p-8">
-                    <h2 class="text-2xl font-semibold text-white">{{ section.title }}</h2>
-                    <div class="mt-4 space-y-3 text-sm leading-7 text-white/70 sm:text-base">
+                <article v-for="section in currentPage.sections" :key="section.title" class="rounded-xl border border-paper-400 bg-white p-6 sm:p-8">
+                    <h2 class="text-xl font-bold text-ink-900">{{ section.title }}</h2>
+                    <div class="mt-4 space-y-3 text-sm leading-7 text-ink-600 sm:text-base">
                         <p v-for="paragraph in section.body" :key="paragraph">{{ paragraph }}</p>
                     </div>
                 </article>

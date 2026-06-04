@@ -60,14 +60,12 @@ function isStandalone() {
 
 <template>
     <button
-        class="hidden items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs uppercase tracking-widest text-white/70 shadow-inner shadow-white/10 transition hover:border-primary-300/40 hover:bg-white/15 hover:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/20 md:inline-flex"
+        class="hidden items-center gap-2 rounded-lg border border-paper-400 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-ink-500 transition hover:border-stamp-300 hover:text-stamp-500 focus:outline-none focus:ring-2 focus:ring-stamp-500/20 md:inline-flex"
         type="button"
         title="Install ILovePDF Studio as a browser app"
         @click="installApp"
     >
-        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-primary-200">
-            <Download class="h-3.5 w-3.5" />
-        </span>
+        <Download class="h-3.5 w-3.5" aria-hidden="true" />
         {{ label }}
     </button>
 </template>

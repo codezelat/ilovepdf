@@ -25,7 +25,7 @@ createInertiaApp({
         createApp({ render: () => h(App, props) }).use(plugin).mount(el);
     },
     progress: {
-        color: '#ef4444',
+        color: '#c53030',
     },
 });
 

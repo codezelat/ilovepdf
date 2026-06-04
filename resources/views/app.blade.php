@@ -18,15 +18,14 @@
         <meta name="application-name" content="ILovePDF Studio">
         <meta name="apple-mobile-web-app-title" content="PDF Studio">
         <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="format-detection" content="telephone=no">
-        <meta name="color-scheme" content="dark light">
+        <meta name="color-scheme" content="light">
         <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-        <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
-        <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+        <meta name="theme-color" content="#faf8f5">
         <meta data-inertia="description" name="description" content="{{ $seo['description'] }}">
         <meta data-inertia="robots" name="robots" content="{{ $seo['robots'] }}">
         <link data-inertia="canonical" rel="canonical" href="{{ $seo['canonical'] }}">
@@ -44,8 +43,7 @@
         <link rel="manifest" href="/manifest.webmanifest">
         <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-        <link rel="mask-icon" href="/icons/icon.svg" color="#ef4444">
-        <meta name="msapplication-TileColor" content="#020617">
+        <meta name="msapplication-TileColor" content="#faf8f5">
         <title data-inertia="">{{ $seo['title'] }}</title>
         @foreach ($seo['jsonLd'] ?? [] as $schema)
             <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
@@ -54,7 +52,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.ts'])
         @inertiaHead
     </head>
-    <body class="antialiased bg-slate-950 text-white">
+    <body class="font-sans antialiased bg-paper-50 text-ink-900">
+        <a class="skip-to-content" href="#main-content">Skip to main content</a>
         @inertia
     </body>
 </html>

@@ -86,7 +86,7 @@ $renderLegal = static function (string $page, array $entry) use ($makeSeo) {
 };
 
 Route::get('/', function () {
-    return app('renderStudio')('home', '/merge-pdf', config('studio.pages.home'));
+    return app('renderStudio')('home', '/compress-pdf', config('studio.pages.home'));
 })->name('studio');
 
 app()->instance('renderStudio', $renderStudio);
@@ -96,9 +96,9 @@ Route::get('/privacy', fn () => app('renderLegal')('privacy', config('studio.pag
 
 Route::get('/terms', fn () => app('renderLegal')('terms', config('studio.pages.terms')))->name('terms');
 
-Route::get('/tools', fn () => app('renderStudio')('tools', '/merge-pdf', config('studio.pages.tools')))->name('tools.index');
+Route::get('/tools', fn () => app('renderStudio')('tools', '/compress-pdf', config('studio.pages.tools')))->name('tools.index');
 
-Route::get('/features', fn () => app('renderStudio')('features', '/merge-pdf', config('studio.pages.features')))->name('features');
+Route::get('/features', fn () => app('renderStudio')('features', '/compress-pdf', config('studio.pages.features')))->name('features');
 
 foreach (config('studio.tools') as $toolName => $tool) {
     Route::get($tool['path'], fn () => app('renderStudio')('tool', $tool['path'], $tool))->name("tools.$toolName");

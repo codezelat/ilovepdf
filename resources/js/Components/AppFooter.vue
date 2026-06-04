@@ -3,12 +3,12 @@ import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <footer class="relative z-10 mt-16 border-t border-white/10">
-        <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-10 text-sm text-white/70 sm:px-6 md:flex-row lg:px-8">
+    <footer class="mt-16 border-t border-paper-300">
+        <div class="page-container flex flex-col items-center justify-between gap-4 py-8 text-sm text-ink-500 md:flex-row">
             <p>
-                © 2026 ILovePDF Studio. Crafted by
+                &copy; 2026 ILovePDF Studio. Crafted by
                 <a
-                    class="font-semibold text-primary-400 transition hover:text-primary-300"
+                    class="font-semibold text-stamp-500 transition hover:text-stamp-600"
                     href="https://codezela.com"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -16,9 +16,9 @@ import { Link } from '@inertiajs/vue3';
                     Codezela Technologies</a>. Documents stay on your device.
             </p>
             <div class="flex items-center gap-4">
-                <Link class="transition hover:text-white" href="/privacy">Privacy</Link>
-                <span class="text-white/30">·</span>
-                <Link class="transition hover:text-white" href="/terms">Terms</Link>
+                <Link class="transition hover:text-ink-700" href="/privacy">Privacy</Link>
+                <span class="text-paper-400">&middot;</span>
+                <Link class="transition hover:text-ink-700" href="/terms">Terms</Link>
             </div>
         </div>
     </footer>
