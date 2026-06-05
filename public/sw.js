@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ilovepdf-studio-v2';
+const CACHE_NAME = 'ilovepdf-studio-v3';
 const APP_SHELL = [
   '/',
   '/tools',

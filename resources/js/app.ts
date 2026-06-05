@@ -31,7 +31,7 @@ createInertiaApp({
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {
+        navigator.serviceWorker.register('/sw.js?v=3').catch(() => {
             // The app remains fully usable if a browser blocks service workers.
         });
     });

@@ -14,7 +14,7 @@ class StudioRoutingTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Studio')
-                ->where('initialTool', '/merge-pdf')
+                ->where('initialTool', '/compress-pdf')
                 ->where('pageMode', 'home')
                 ->has('seo.title')
                 ->has('seo.description')
@@ -41,7 +41,7 @@ class StudioRoutingTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Studio')
-                ->where('initialTool', '/merge-pdf')
+                ->where('initialTool', '/compress-pdf')
                 ->where('pageMode', $pageMode)
                 ->has('seo.title')
                 ->has('seo.description')
